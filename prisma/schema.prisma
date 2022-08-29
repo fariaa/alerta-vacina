@@ -1,0 +1,82 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Acesso {
+  id           Int          @id @default(autoincrement())
+  apelido      String?
+  email        String       @unique
+  senha        String
+  data_criacao DateTime     @default(now())
+  Responsavel  Responsavel?
+
+  @@map("acesso")
+}
+
+model Endereco {
+  id          Int          @id @default(autoincrement())
+  rua         String
+  bairro      String
+  numero      Int
+  complemento String?
+  cep         String
+  Responsavel Responsavel?
+
+  @@map("endereco")
+}
+
+model Responsavel {
+  id              Int         @id @default(autoincrement())
+  end             Endereco    @relation(fields: [endereco_id], references: [id])
+  endereco_id     Int         @unique
+  acess           Acesso      @relation(fields: [acesso_id], references: [id])
+  acesso_id       Int         @unique
+  nome            String
+  cpf             String
+  data_nascimento DateTime
+  data_criacao    DateTime    @default(now())
+  Crianca         Crianca?
+  Historico       Historico[]
+
+  @@map("responsavel")
+}
+
+model Crianca {
+  id              Int         @id @default(autoincrement())
+  resp            Responsavel @relation(fields: [responsavel_id], references: [id])
+  responsavel_id  Int         @unique
+  nome            String
+  cpf             String
+  data_nascimento DateTime
+  data_criacao    DateTime    @default(now())
+  Historico       Historico[]
+
+  @@map("crianca")
+}
+
+model Vacina {
+  id        Int         @id @default(autoincrement())
+  nome      String
+  descricao String
+  Historico Historico[]
+
+  @@map("vacina")
+}
+
+model Historico {
+  id             Int         @id @default(autoincrement())
+  cri            Crianca     @relation(fields: [crianca_id], references: [id])
+  crianca_id     Int
+  vac            Vacina      @relation(fields: [vacina_id], references: [id])
+  vacina_id      Int
+  resp           Responsavel @relation(fields: [responsavel_id], references: [id])
+  responsavel_id Int
+  data_criacao   DateTime    @default(now())
+
+  @@map("historico")
+}

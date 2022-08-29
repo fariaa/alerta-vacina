@@ -1,0 +1,8 @@
+POST http://localhost:3000/cadastro HTTP/1.1
+content-type: application/json
+
+{
+    "apelido": "lucas",
+    "email": "lucas@hotmail.com",
+    "senha": "teste123"
+}
